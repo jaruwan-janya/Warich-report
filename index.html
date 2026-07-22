@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบรายงานและแดชบอร์ด - โรงเรียนมัธยมวาริชภูมิ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Sarabun) -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            DEFAULT: '#0F2C59',
+                            dark: '#0A1E3F',
+                            light: '#1D4ED8'
+                        },
+                        orange: {
+                            DEFAULT: '#FF6B00',
+                            hover: '#E05D00',
+                            light: '#FFF4EC'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #F8FAFC;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+
+    <div class="max-w-5xl mx-auto">
+        
+        <!-- Header Card -->
+        <div class="bg-navy text-white rounded-t-2xl shadow-xl overflow-hidden relative">
+            <div class="bg-gradient-to-r from-orange to-amber-500 h-3"></div>
+            <div class="p-6 sm:p-8 text-center relative z-10">
+                <div class="inline-flex p-3 bg-white/10 rounded-full mb-3 text-orange">
+                    <i class="fa-solid font-bold fa-book-open text-3xl text-orange-400"></i>
+                </div>
+                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold tracking-wide leading-tight">
+                    ระบบรายงานรูปแบบการจัดการเรียนการสอนแบบ On-Hand และ On-Demand Learning
+                </h1>
+                <p class="text-orange-200 mt-2 font-medium text-base sm:text-lg">
+                    โรงเรียนมัธยมวาริชภูมิ สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาสกลนคร
+                </p>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="flex border-t border-navy-light/30 bg-navy-dark px-4 sm:px-8">
+                <button id="tabFormBtn" onclick="switchTab('form')" 
+                        class="flex-1 py-3 px-4 text-center font-bold text-sm sm:text-base border-b-4 border-orange text-orange transition duration-200 flex items-center justify-center">
+                    <i class="fa-solid fa-pen-to-square mr-2"></i> แบบฟอร์มรายงาน
+                </button>
+                <button id="tabDashboardBtn" onclick="switchTab('dashboard')" 
+                        class="flex-1 py-3 px-4 text-center font-bold text-sm sm:text-base border-b-4 border-transparent text-gray-300 hover:text-white transition duration-200 flex items-center justify-center">
+                    <i class="fa-solid fa-chart-line mr-2"></i> แดชบอร์ดสรุปข้อมูล
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 1: FORM ================= -->
+        <div id="formSection" class="bg-white rounded-b-2xl shadow-xl p-6 sm:p-10 border-x border-b border-gray-100">
+            <form id="reportForm" class="space-y-8">
+                
+                <!-- Section 1: ข้อมูลทั่วไป -->
+                <div>
+                    <h2 class="text-lg font-bold text-navy flex items-center border-b-2 border-orange/30 pb-2 mb-4">
+                        <i class="fa-solid fa-calendar-check text-orange mr-2"></i> ข้อมูลการรายงานและผู้สอน
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- วันที่รายงาน -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">วันที่รายงาน <span class="text-red-500">*</span></label>
+                            <select id="reportDate" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy transition bg-white">
+                                <option value="">-- เลือกวันที่รายงาน --</option>
+                                <option value="27 กรกฎาคม 2569">วันที่ 27 กรกฎาคม 2569</option>
+                                <option value="31 กรกฎาคม 2569">วันที่ 31 กรกฎาคม 2569</option>
+                            </select>
+                        </div>
+
+                        <!-- ชื่อ-สกุลครูผู้สอน -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">ชื่อ-สกุลครูผู้สอน <span class="text-red-500">*</span></label>
+                            <input type="text" id="teacherName" required placeholder="ระบุชื่อ-นามสกุล พร้อมคำนำหน้า" 
+                                   class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy transition">
+                        </div>
+
+                        <!-- กลุ่มสาระการเรียนรู้ -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">กลุ่มสาระการเรียนรู้ <span class="text-red-500">*</span></label>
+                            <select id="subject" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy transition bg-white">
+                                <option value="">-- เลือกกลุ่มสาระการเรียนรู้ --</option>
+                                <option value="ภาษาไทย">ภาษาไทย</option>
+                                <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+                                <option value="วิทยาศาสตร์และเทคโนโลยี">วิทยาศาสตร์และเทคโนโลยี</option>
+                                <option value="สังคมศึกษา ศาสนา และวัฒนธรรม">สังคมศึกษา ศาสนา และวัฒนธรรม</option>
+                                <option value="สุขศึกษาและพลศึกษา">สุขศึกษาและพลศึกษา</option>
+                                <option value="ศิลปะ">ศิลปะ</option>
+                                <option value="การงานอาชีพ">การงานอาชีพ</option>
+                                <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+                                <option value="อื่น ๆ">อื่น ๆ</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: ข้อมูลการสอนและห้องเรียน -->
+                <div>
+                    <h2 class="text-lg font-bold text-navy flex items-center border-b-2 border-orange/30 pb-2 mb-4">
+                        <i class="fa-solid fa-users-rectangle text-orange mr-2"></i> ระดับชั้นและเวลาที่สอน
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- ระดับชั้น -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">ระดับชั้นที่สอน <span class="text-red-500">*</span></label>
+                            <select id="gradeSelect" required onchange="updateClassRooms()" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy transition bg-white">
+                                <option value="">-- เลือกระดับชั้น --</option>
+                                <option value="ม.1">ม.1</option>
+                                <option value="ม.2">ม.2</option>
+                                <option value="ม.3">ม.3</option>
+                                <option value="ม.4">ม.4</option>
+                                <option value="ม.5">ม.5</option>
+                                <option value="ม.6">ม.6</option>
+                            </select>
+                        </div>
+
+                        <!-- ห้อง -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">ห้อง <span class="text-red-500">*</span></label>
+                            <select id="roomSelect" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy transition bg-white">
+                                <option value="">-- กรุณาเลือกระดับชั้นก่อน --</option>
+                            </select>
+                        </div>
+
+                        <!-- เวลาที่สอน / ชั่วโมงที่สอน -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">เวลาที่สอน / ชั่วโมงที่สอน <span class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                <label class="flex items-center p-2.5 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-orange-light transition">
+                                    <input type="checkbox" name="periods[]" value="ชั่วโมงที่ 1" class="w-4 h-4 text-navy rounded border-gray-300 focus:ring-navy">
+                                    <span class="ml-2.5 text-sm text-gray-700">ชั่วโมงที่ 1 (08.30-09.20)</span>
+                                </label>
+                                <label class="flex items-center p-2.5 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-orange-light transition">
+                                    <input type="checkbox" name="periods[]" value="ชั่วโมงที่ 2" class="w-4 h-4 text-navy rounded border-gray-300 focus:ring-navy">
+                                    <span class="ml-2.5 text-sm text-gray-700">ชั่วโมงที่ 2 (09.20-10.10)</span>
+                                </label>
+                                <label class="flex items-center p-2.5 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-orange-light transition">
+                                    <input type="checkbox" name="periods[]" value="ชั่วโมงที่ 3" class="w-4 h-4 text-navy rounded border-gray-300 focus:ring-navy">
+                                    <span class="ml-2.5 text-sm text-gray-700">ชั่วโมงที่ 3 (10.10-11.00)</span>
+                                </label>
+                                <label class="flex items-center p-2.5 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-orange-light transition">
+                                    <input type="checkbox" name="periods[]" value="ชั่วโมงที่ 4 พักต้น" class="w-4 h-4 text-navy rounded border-gray-300 focus:ring-navy">
+                                    <span class="ml-2.5 text-sm text-gray-700">ชั่วโมงที่ 4 พักต้น (11.00-11.50)</span>
+                                </label>
+                                <label class="flex items-center p-2.5 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-orange-light transition">
+                                    <input type="checkbox" name="periods[]" value="ชั่วโมงที่ 4 พักปลาย" class="w-4 h-4 text-navy rounded border-gray-300 focus:ring-navy">
+                                    <span class="ml-2.5 text-sm text-gray-700">ชั่วโมงที่ 4 พักปลาย (11.50-12.40)</span>
+                                </label>
+                                <label class="flex items-center p-2.5 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-orange-light transition">
+                                    <input type="checkbox" name="periods[]" value="ชั่วโมงที่ 5" class="w-4 h-4 text-navy rounded border-gray-300 focus:ring-navy">
+                                    <span class="ml-2.5 text-sm text-gray-700">ชั่วโมงที่ 5 (12.40-13.30)</span>
+                                </label>
+                                <label class="flex items-center p-2.5 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-orange-light transition">
+                                    <input type="checkbox" name="periods[]" value="ชั่วโมงที่ 6" class="w-4 h-4 text-navy rounded border-gray-300 focus:ring-navy">
+                                    <span class="ml-2.5 text-sm text-gray-700">ชั่วโมงที่ 6 (13.30-14.20)</span>
+                                </label>
+                                <label class="flex items-center p-2.5 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-orange-light transition">
+                                    <input type="checkbox" name="periods[]" value="ชั่วโมงที่ 7" class="w-4 h-4 text-navy rounded border-gray-300 focus:ring-navy">
+                                    <span class="ml-2.5 text-sm text-gray-700">ชั่วโมงที่ 7 (14.20-15.10)</span>
+                                </label>
+                                <label class="flex items-center p-2.5 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-orange-light transition">
+                                    <input type="checkbox" name="periods[]" value="ชั่วโมงที่ 8" class="w-4 h-4 text-navy rounded border-gray-300 focus:ring-navy">
+                                    <span class="ml-2.5 text-sm text-gray-700">ชั่วโมงที่ 8 (15.10-16.00)</span>
+                                </label>
+                                <label class="flex items-center p-2.5 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-orange-light transition">
+                                    <input type="checkbox" name="periods[]" value="ชั่วโมงที่ 9" class="w-4 h-4 text-navy rounded border-gray-300 focus:ring-navy">
+                                    <span class="ml-2.5 text-sm text-gray-700">ชั่วโมงที่ 9 (16.00-16.50)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: สื่อและผลงานการเรียนการสอน -->
+                <div>
+                    <h2 class="text-lg font-bold text-navy flex items-center border-b-2 border-orange/30 pb-2 mb-4">
+                        <i class="fa-solid fa-folder-open text-orange mr-2"></i> สื่อการสอนและแนบไฟล์ผลงาน
+                    </h2>
+
+                    <div class="space-y-6">
+                        <!-- สื่อการสอน (รายละเอียด + ไฟล์ + ลิงก์) -->
+                        <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 space-y-4">
+                            <h3 class="text-sm font-bold text-navy flex items-center">
+                                <i class="fa-solid fa-photo-film text-orange mr-2"></i> สื่อการสอน (ถ้ามี)
+                            </h3>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">รายละเอียดสื่อการสอน</label>
+                                <textarea id="mediaText" rows="2" placeholder="ระบุรายละเอียดสื่อการสอนที่ใช้ เช่น ใบงาน, คลิปวิดีโอ, PowerPoint" 
+                                          class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy text-sm bg-white"></textarea>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">แนบไฟล์สื่อการสอน</label>
+                                    <input type="file" id="mediaFile"
+                                           class="block w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-navy file:text-white hover:file:bg-navy-dark transition border border-gray-300 rounded-lg bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">หรือแนบลิงก์สื่อการสอน</label>
+                                    <input type="url" id="mediaLink" placeholder="https://..." 
+                                           class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy bg-white">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ผลงานนักเรียน (ไฟล์สูงสุด 40 ไฟล์ + ลิงก์) -->
+                        <div class="bg-slate-50 p-5 rounded-xl border border-gray-200 space-y-4">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-sm font-bold text-navy flex items-center">
+                                    <i class="fa-solid fa-graduation-cap text-orange mr-2"></i> ผลงานนักเรียน
+                                </h3>
+                                <span class="text-xs bg-orange-light text-orange font-bold px-2.5 py-1 rounded-full border border-orange/30">
+                                    แนบไฟล์ได้สูงสุด 40 ไฟล์
+                                </span>
+                            </div>
+                            
+                            <!-- แนบไฟล์ผลงาน -->
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">
+                                    แนบไฟล์ผลงาน (รองรับ QR code, ไฟล์ Word, PDF, รูปภาพ)
+                                </label>
+                                <input type="file" id="studentFiles" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip,.rar" 
+                                       class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-navy file:text-white hover:file:bg-navy-dark transition border border-gray-300 rounded-lg bg-white">
+                                <p id="studentFilesCount" class="text-xs font-semibold text-navy mt-1.5">ยังไม่ได้เลือกไฟล์</p>
+                            </div>
+
+                            <!-- ลิงก์ผลงาน -->
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">ลิงก์รวบรวมผลงาน (Google Drive, เว็บไซต์ ฯลฯ)</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                        <i class="fa-solid fa-link"></i>
+                                    </div>
+                                    <input type="url" id="studentWorkLink" placeholder="https://drive.google.com/..." 
+                                           class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy bg-white">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- รูปภาพประกอบการสอน (แนบไฟล์สูงสุด 5 ไฟล์) -->
+                        <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 space-y-3">
+                            <div class="flex justify-between items-center">
+                                <label class="block text-sm font-bold text-navy">
+                                    <i class="fa-solid fa-images text-orange mr-1"></i> รูปภาพประกอบการสอน (ถ้ามี)
+                                </label>
+                                <span class="text-xs bg-navy-light/10 text-navy font-bold px-2.5 py-1 rounded-full">
+                                    แนบได้สูงสุด 5 ไฟล์
+                                </span>
+                            </div>
+                            <input type="file" id="photoFiles" accept="image/*" multiple 
+                                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-orange file:text-white hover:file:bg-orange-hover transition border border-gray-300 rounded-lg bg-white">
+                            <p id="photoFilesCount" class="text-xs font-semibold text-orange-hover mt-1">ยังไม่ได้เลือกรูปภาพ</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4 border-t border-gray-200 flex justify-end">
+                    <button type="submit" 
+                            class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-orange to-amber-500 hover:from-orange-hover hover:to-amber-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition flex items-center justify-center text-base">
+                        <i class="fa-solid fa-paper-plane mr-2"></i> บันทึกข้อมูลรายงาน
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- ================= SECTION 2: DASHBOARD ================= -->
+        <div id="dashboardSection" class="hidden bg-white rounded-b-2xl shadow-xl p-6 sm:p-8 border-x border-b border-gray-100 space-y-8">
+            
+            <!-- Stat Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Stat 1 -->
+                <div class="bg-gradient-to-br from-navy to-navy-dark text-white p-5 rounded-xl shadow border-l-4 border-orange flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-orange-200 font-semibold">จำนวนครูที่ส่งงานแล้ว</p>
+                        <p id="statTeacherCount" class="text-2xl font-bold mt-1">0 คน</p>
+                    </div>
+                    <div class="p-3 bg-white/10 rounded-full text-orange">
+                        <i class="fa-solid fa-chalkboard-user text-2xl"></i>
+                    </div>
+                </div>
+
+                <!-- Stat 2 -->
+                <div class="bg-white p-5 rounded-xl shadow border border-gray-200 border-l-4 border-navy flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold">รายงานรวมทั้งหมด</p>
+                        <p id="statTotalReports" class="text-2xl font-bold text-navy mt-1">0 รายการ</p>
+                    </div>
+                    <div class="p-3 bg-navy-light/10 rounded-full text-navy">
+                        <i class="fa-solid fa-file-lines text-2xl"></i>
+                    </div>
+                </div>
+
+                <!-- Stat 3 -->
+                <div class="bg-white p-5 rounded-xl shadow border border-gray-200 border-l-4 border-amber-500 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold">ไฟล์ผลงานที่แนบรวม</p>
+                        <p id="statTotalStudentFiles" class="text-2xl font-bold text-amber-600 mt-1">0 ไฟล์</p>
+                    </div>
+                    <div class="p-3 bg-amber-50 rounded-full text-amber-500">
+                        <i class="fa-solid fa-folder-tree text-2xl"></i>
+                    </div>
+                </div>
+
+                <!-- Stat 4 -->
+                <div class="bg-white p-5 rounded-xl shadow border border-gray-200 border-l-4 border-emerald-500 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold">รูปภาพประกอบการสอน</p>
+                        <p id="statTotalPhotos" class="text-2xl font-bold text-emerald-600 mt-1">0 ภาพ</p>
+                    </div>
+                    <div class="p-3 bg-emerald-50 rounded-full text-emerald-500">
+                        <i class="fa-solid fa-images text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List of Teachers Who Submitted -->
+            <div class="bg-orange-light/50 p-5 rounded-xl border border-orange/20">
+                <h3 class="text-sm font-bold text-navy flex items-center mb-3">
+                    <i class="fa-solid fa-user-check text-orange mr-2"></i> รายชื่อครูผู้สอนที่ส่งรายงานแล้วทั้งหมด
+                </h3>
+                <div id="submittedTeachersList" class="flex flex-wrap gap-2">
+                    <span class="text-xs text-gray-500 italic">ยังไม่มีข้อมูลการส่งรายงาน</span>
+                </div>
+            </div>
+
+            <!-- Controls (Search & Filter) -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <div class="relative w-full sm:w-72">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-sm"></i>
+                    <input type="text" id="searchInput" onkeyup="filterDashboardTable()" placeholder="ค้นหาชื่อครู..." 
+                           class="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-navy bg-white">
+                </div>
+                
+                <div class="w-full sm:w-auto flex items-center space-x-2">
+                    <label class="text-xs font-semibold text-gray-600 whitespace-nowrap">กรองกลุ่มสาระฯ:</label>
+                    <select id="filterSubject" onchange="filterDashboardTable()" class="w-full sm:w-auto px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-navy bg-white">
+                        <option value="ALL">ทั้งหมด</option>
+                        <option value="ภาษาไทย">ภาษาไทย</option>
+                        <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+                        <option value="วิทยาศาสตร์และเทคโนโลยี">วิทยาศาสตร์และเทคโนโลยี</option>
+                        <option value="สังคมศึกษา ศาสนา และวัฒนธรรม">สังคมศึกษา ศาสนา และวัฒนธรรม</option>
+                        <option value="สุขศึกษาและพลศึกษา">สุขศึกษาและพลศึกษา</option>
+                        <option value="ศิลปะ">ศิลปะ</option>
+                        <option value="การงานอาชีพ">การงานอาชีพ</option>
+                        <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+                        <option value="อื่น ๆ">อื่น ๆ</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-navy text-white text-xs uppercase tracking-wider">
+                            <th class="p-3 font-semibold">วันที่</th>
+                            <th class="p-3 font-semibold">ชื่อ-สกุลครูผู้สอน</th>
+                            <th class="p-3 font-semibold">กลุ่มสาระฯ</th>
+                            <th class="p-3 font-semibold">ระดับชั้น/ห้อง</th>
+                            <th class="p-3 font-semibold">ชั่วโมงที่สอน</th>
+                            <th class="p-3 font-semibold text-center">ไฟล์ผลงาน</th>
+                            <th class="p-3 font-semibold text-center">ภาพถ่าย</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboardTableBody" class="divide-y divide-gray-200 bg-white">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+    // 📌 1. วาง URL เว็บแอปที่ได้จาก Google Apps Script ตรงนี้ (ต้องลงท้ายด้วย /exec)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbysC6geoGfjufkbxHvBCRtyeE3LkBTycPuZNLM9yzrQ_FnirjP5MgfqrlVYU4-YM4olLw/exec";
+
+    // Dynamic Room Data
+    const roomData = {
+        'ม.1': 9, 'ม.2': 10, 'ม.3': 10,
+        'ม.4': 6, 'ม.5': 5, 'ม.6': 6
+    };
+
+    // รายการข้อมูลสำหรับแดชบอร์ด
+    let reportsList = [];
+
+    // Init App
+    document.addEventListener('DOMContentLoaded', () => {
+        renderDashboard();
+    });
+
+    // Tab Switcher Logic
+    function switchTab(tab) {
+        const formSection = document.getElementById('formSection');
+        const dashboardSection = document.getElementById('dashboardSection');
+        const tabFormBtn = document.getElementById('tabFormBtn');
+        const tabDashboardBtn = document.getElementById('tabDashboardBtn');
+
+        if (tab === 'form') {
+            formSection.classList.remove('hidden');
+            dashboardSection.classList.add('hidden');
+            tabFormBtn.className = "flex-1 py-3 px-4 text-center font-bold text-sm sm:text-base border-b-4 border-orange text-orange transition duration-200 flex items-center justify-center";
+            tabDashboardBtn.className = "flex-1 py-3 px-4 text-center font-bold text-sm sm:text-base border-b-4 border-transparent text-gray-300 hover:text-white transition duration-200 flex items-center justify-center";
+        } else {
+            formSection.classList.add('hidden');
+            dashboardSection.classList.remove('hidden');
+            tabDashboardBtn.className = "flex-1 py-3 px-4 text-center font-bold text-sm sm:text-base border-b-4 border-orange text-orange transition duration-200 flex items-center justify-center";
+            tabFormBtn.className = "flex-1 py-3 px-4 text-center font-bold text-sm sm:text-base border-b-4 border-transparent text-gray-300 hover:text-white transition duration-200 flex items-center justify-center";
+            renderDashboard();
+        }
+    }
+
+    // Dynamic Dropdown for Rooms
+    function updateClassRooms() {
+        const gradeSelect = document.getElementById('gradeSelect');
+        const roomSelect = document.getElementById('roomSelect');
+        const selectedGrade = gradeSelect.value;
+
+        roomSelect.innerHTML = '';
+
+        if (selectedGrade && roomData[selectedGrade]) {
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = '-- เลือกห้องเรียน --';
+            roomSelect.appendChild(defaultOption);
+
+            const maxRooms = roomData[selectedGrade];
+            for (let i = 1; i <= maxRooms; i++) {
+                const option = document.createElement('option');
+                option.value = `${selectedGrade}/${i}`;
+                option.textContent = `${selectedGrade}/${i}`;
+                roomSelect.appendChild(option);
+            }
+        } else {
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = '-- กรุณาเลือกระดับชั้นก่อน --';
+            roomSelect.appendChild(defaultOption);
+        }
+    }
+
+    // File Limit Counters
+    const studentFilesInput = document.getElementById('studentFiles');
+    const studentFilesCount = document.getElementById('studentFilesCount');
+    studentFilesInput.addEventListener('change', function() {
+        if (this.files.length > 40) {
+            alert('⚠️ แนบไฟล์ผลงานได้สูงสุด 40 ไฟล์เท่านั้น');
+            this.value = '';
+            studentFilesCount.textContent = 'ยังไม่ได้เลือกไฟล์';
+            studentFilesCount.className = 'text-xs font-semibold text-red-500 mt-1.5';
+        } else {
+            studentFilesCount.textContent = `เลือกแล้ว ${this.files.length} ไฟล์ (สูงสุด 40 ไฟล์)`;
+            studentFilesCount.className = 'text-xs font-semibold text-navy mt-1.5';
+        }
+    });
+
+    const photoFilesInput = document.getElementById('photoFiles');
+    const photoFilesCount = document.getElementById('photoFilesCount');
+    photoFilesInput.addEventListener('change', function() {
+        if (this.files.length > 5) {
+            alert('⚠️ แนบรูปภาพประกอบได้สูงสุด 5 ไฟล์เท่านั้น');
+            this.value = '';
+            photoFilesCount.textContent = 'ยังไม่ได้เลือกรูปภาพ';
+            photoFilesCount.className = 'text-xs font-semibold text-red-500 mt-1';
+        } else {
+            photoFilesCount.textContent = `เลือกแล้ว ${this.files.length} รูปภาพ (สูงสุด 5 ไฟล์)`;
+            photoFilesCount.className = 'text-xs font-semibold text-orange-hover mt-1';
+        }
+    });
+
+    // Helper Function: Convert File to Base64
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve({
+                name: file.name,
+                mimeType: file.type,
+                base64: reader.result
+            });
+            reader.onerror = error => reject(error);
+        });
+    }
+
+    // Form Submission & Data Upload
+    document.getElementById('reportForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const selectedPeriods = Array.from(document.querySelectorAll('input[name="periods[]"]:checked'))
+                                     .map(cb => cb.value);
+
+        if (selectedPeriods.length === 0) {
+            alert('กรุณาเลือกเวลา/ชั่วโมงที่สอนอย่างน้อย 1 ชั่วโมง');
+            return;
+        }
+
+        // ปุ่มแสดงสถานะกำลังบันทึก
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังบันทึกข้อมูลและอัปโหลดไฟล์...';
+
+        try {
+            // แปลงไฟล์เป็น Base64
+            const studentFilesData = await Promise.all(Array.from(studentFilesInput.files).map(fileToBase64));
+            const photoFilesData = await Promise.all(Array.from(photoFilesInput.files).map(fileToBase64));
+            
+            let mediaFileData = null;
+            const mediaFileInput = document.getElementById('mediaFile');
+            if (mediaFileInput && mediaFileInput.files.length > 0) {
+                mediaFileData = await fileToBase64(mediaFileInput.files[0]);
+            }
+
+            // จัดเตรียมข้อมูลส่งเข้า Google Apps Script
+            const payload = {
+                reportDate: document.getElementById('reportDate').value,
+                teacherName: document.getElementById('teacherName').value,
+                subject: document.getElementById('subject').value,
+                gradeRoom: document.getElementById('roomSelect').value,
+                periods: selectedPeriods.join(', '),
+                mediaText: document.getElementById('mediaText').value,
+                mediaLink: document.getElementById('mediaLink').value,
+                mediaFile: mediaFileData,
+                studentWorkLink: document.getElementById('studentWorkLink').value,
+                studentFiles: studentFilesData,
+                photoFiles: photoFilesData
+            };
+
+            // ส่งข้อมูลไปยัง Google Apps Script
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            // เพิ่มข้อมูลเข้าสู่รายการเพื่อแสดงในแดชบอร์ดทันที
+            const newReport = {
+                date: payload.reportDate,
+                teacher: payload.teacherName,
+                subject: payload.subject,
+                gradeRoom: payload.gradeRoom,
+                periods: payload.periods,
+                studentFilesCount: payload.studentFiles.length,
+                photosCount: payload.photoFiles.length
+            };
+            reportsList.unshift(newReport);
+
+            alert('✅ บันทึกข้อมูลและอัปโหลดไฟล์สำเร็จแล้ว!');
+            
+            // ล้างฟอร์ม
+            this.reset();
+            studentFilesCount.textContent = 'ยังไม่ได้เลือกไฟล์';
+            photoFilesCount.textContent = 'ยังไม่ได้เลือกรูปภาพ';
+            document.getElementById('roomSelect').innerHTML = '<option value="">-- กรุณาเลือกระดับชั้นก่อน --</option>';
+
+            // สลับไปแสดงหน้าแดชบอร์ด
+            switchTab('dashboard');
+
+        } catch (error) {
+            console.error(error);
+            alert('❌ เกิดข้อผิดพลาดในการส่งข้อมูล: ' + error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    });
+
+    // Render Dashboard Table & Stats
+    function renderDashboard() {
+        const tableBody = document.getElementById('dashboardTableBody');
+        const teacherListContainer = document.getElementById('submittedTeachersList');
+        
+        tableBody.innerHTML = '';
+        teacherListContainer.innerHTML = '';
+
+        let totalStudentFiles = 0;
+        let totalPhotos = 0;
+        let uniqueTeachers = new Set();
+
+        reportsList.forEach(report => {
+            uniqueTeachers.add(report.teacher);
+            totalStudentFiles += report.studentFilesCount;
+            totalPhotos += report.photosCount;
+
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gray-50 transition border-b border-gray-100';
+            row.innerHTML = `
+                <td class="p-3 text-gray-700 whitespace-nowrap">${report.date}</td>
+                <td class="p-3 font-semibold text-navy whitespace-nowrap">${report.teacher}</td>
+                <td class="p-3 text-gray-600">${report.subject}</td>
+                <td class="p-3 font-medium text-orange-hover whitespace-nowrap">${report.gradeRoom}</td>
+                <td class="p-3 text-xs text-gray-500">${report.periods}</td>
+                <td class="p-3 text-center">
+                    <span class="px-2 py-1 text-xs rounded-full bg-amber-100 text-amber-800 font-bold">
+                        ${report.studentFilesCount} ไฟล์
+                    </span>
+                </td>
+                <td class="p-3 text-center">
+                    <span class="px-2 py-1 text-xs rounded-full bg-emerald-100 text-emerald-800 font-bold">
+                        ${report.photosCount} ภาพ
+                    </span>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        document.getElementById('statTeacherCount').textContent = `${uniqueTeachers.size} คน`;
+        document.getElementById('statTotalReports').textContent = `${reportsList.length} รายการ`;
+        document.getElementById('statTotalStudentFiles').textContent = `${totalStudentFiles} ไฟล์`;
+        document.getElementById('statTotalPhotos').textContent = `${totalPhotos} ภาพ`;
+
+        if (uniqueTeachers.size > 0) {
+            uniqueTeachers.forEach(teacher => {
+                const badge = document.createElement('span');
+                badge.className = 'px-3 py-1 bg-white border border-orange/40 text-navy font-semibold text-xs rounded-full shadow-sm flex items-center';
+                badge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 mr-1.5"></i> ${teacher}`;
+                teacherListContainer.appendChild(badge);
+            });
+        } else {
+            teacherListContainer.innerHTML = '<span class="text-xs text-gray-500 italic">ยังไม่มีข้อมูลการส่งรายงาน</span>';
+        }
+    }
+
+    // Filter Table Function
+    function filterDashboardTable() {
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        const filterSubject = document.getElementById('filterSubject').value;
+        const rows = document.getElementById('dashboardTableBody').getElementsByTagName('tr');
+
+        Array.from(rows).forEach(row => {
+            const teacherName = row.cells[1].textContent.toLowerCase();
+            const subject = row.cells[2].textContent;
+
+            const matchesSearch = teacherName.includes(searchInput);
+            const matchesSubject = (filterSubject === 'ALL' || subject === filterSubject);
+
+            if (matchesSearch && matchesSubject) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+</body>
+</html>
